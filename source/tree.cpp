@@ -124,7 +124,7 @@ Node_t* DeleteSubTree(Node_t* node){
 Node_t* CreateOperatorNode(ExpressionTree_t* tree, char* op_code, Node_t* node_left, Node_t* node_right){
     union expr_type value = {0};
     
-    char* op_copy = (char*)malloc(2);
+    char* op_copy = (char*)calloc(2, sizeof(char));
     if (op_copy) {
         op_copy[0] = op_code[0];
         op_copy[1] = '\0';

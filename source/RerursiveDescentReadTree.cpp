@@ -123,6 +123,7 @@ Node_t *GetE(MathExpression *math_exp, char **exp_from_file)
             val_left = CreateOperatorNode(math_exp->tree, &op, val_left, val_right);
         }
     }
+    
     return val_left;
 }
 

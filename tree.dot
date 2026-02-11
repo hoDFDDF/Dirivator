@@ -1,0 +1,11 @@
+digraph tree{
+    charset="UTF-8";
+     bgcolor="dark_blue";
+     rankdir = TB;
+    nodesep = 0.5;
+    ranksep = 0.7;
+    node [shape=plaintext, style=filled, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    labelloc="t";
+ { rank = same;}}

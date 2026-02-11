@@ -1,21 +1,22 @@
 #include "tree.h"
 
-void TreeCtor(ExpressionTree_t* tree){
-    assert(tree != nullptr);
-    tree->root = (Node_t*)calloc(1, sizeof(Node_t));
-    tree->root->left_child = tree->root->right_child = nullptr;
-    tree->size = 0;
+Node_t* NodeCtor(expr_type data, ExpressionTree_t* tree, int node_type) {
+    Node_t* new_node = (Node_t*)calloc(1, sizeof(Node_t));
+    if (!new_node) return nullptr;
+    
+    new_node->tree_data = data;
+    new_node->type = (InputEquationType)node_type;  
+    new_node->left_child = nullptr;
+    new_node->right_child = nullptr;
+    new_node->parent = nullptr;
+    
+    return new_node;
 }
 
-Node_t* NodeCtor(expr_type data, ExpressionTree_t* tree, int type){
-
-   Node_t* new_node = (Node_t*)calloc(1, sizeof(Node_t));
-
-   new_node->tree_data = data;
-
-   new_node->left_child = new_node->right_child = new_node->parent =  nullptr;
-    
-   return new_node;
+void TreeCtor(ExpressionTree_t* tree){
+    assert(tree != nullptr);
+    tree->root = nullptr;
+    tree->size = 0;
 }
 
 Node_t* NodeDtor(){ 
@@ -121,12 +122,19 @@ Node_t* DeleteSubTree(Node_t* node){
 }
 
 Node_t* CreateOperatorNode(ExpressionTree_t* tree, char* op_code, Node_t* node_left, Node_t* node_right){
-    union expr_type value;
-    value.operat = op_code;
+    union expr_type value = {0};
+    
+    char* op_copy = (char*)malloc(2);
+    if (op_copy) {
+        op_copy[0] = op_code[0];
+        op_copy[1] = '\0';
+        value.operat = op_copy;
+    }
+    
     Node_t* new_node = NodeCtor(value, tree, OPERATORTYPE);
     
     if (new_node) {
-        new_node->left_child  =  node_left;
+        new_node->left_child  = node_left;
         new_node->right_child = node_right; 
     }
  
@@ -134,13 +142,18 @@ Node_t* CreateOperatorNode(ExpressionTree_t* tree, char* op_code, Node_t* node_l
 }
 
 Node_t* CreateVariableNode(ExpressionTree_t* tree, char* var_code){
-    union expr_type value;
-    value.varible = var_code;
+    union expr_type value = {0};
+    
+    value.varible = (char*)malloc(strlen(var_code) + 1);
+    if (value.varible) {
+        strcpy(value.varible, var_code);
+    }
+    
     return NodeCtor(value, tree, VARIABLETYPE);
-} 
+}
 
 Node_t* CreateNumberNode(ExpressionTree_t* tree, int numb_code){
-    union expr_type value;
+    union expr_type value = {0};
     value.numb = numb_code;
     return NodeCtor(value, tree, NUMBERTYPE);
 }

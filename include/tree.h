@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "TreeError_t.h"
 
@@ -16,11 +17,19 @@ union expr_type{
     int numb;
 };
 
+enum InputEquationType{
+    OPERATORTYPE,
+    VARIABLETYPE,
+    NUMBERTYPE, 
+    NOTYPE
+};
+
 struct Node_t{
     Node_t* left_child;
     Node_t* right_child;
     Node_t* parent;
     expr_type tree_data;
+    InputEquationType type;
 };
 
 struct ExpressionTree_t{
@@ -45,12 +54,7 @@ enum Child {
     RIGHT_CHILD
 };
 
-enum InputEquationType{
-    OPERATORTYPE,
-    VARIABLETYPE,
-    NUMBERTYPE, 
-    NOTYPE
-};
+
 
 
 void TreeCtor(ExpressionTree_t* tree);

@@ -6,61 +6,77 @@
 
 int main() {
     FILE* fp = fopen("Exception.txt", "r");
-    if (fp == NULL) {
-        printf("Error: Cannot open file\n");
+    if (!fp) {
+        printf("Cannot open Exception.txt\n");
         return 1;
     }
     
     char buffer[256];
-    if (fgets(buffer, sizeof(buffer), fp) == NULL) {
-        printf("Error: Cannot read from file\n");
+    if (!fgets(buffer, sizeof(buffer), fp)) {
+        printf("Cannot read from file\n");
         fclose(fp);
         return 1;
     }
+    fclose(fp);
     
     buffer[strcspn(buffer, "\n")] = '\0';
     
-    printf("\n========================================\n");
-    printf("PARSING EXPRESSION: '%s'\n", buffer);
-    printf("========================================\n\n");
+    printf("Expression: %s\n", buffer);
     
     ExpressionTree_t tree = {};
     TreeCtor(&tree);
     
-    MathExpression math_exp = {&tree, nullptr, nullptr};
+    MathExpression math_exp = {&tree, 0, 0};
     
     char* str_ptr = buffer;
     Node_t* root = GetG(&math_exp, &str_ptr);
     
-    printf("\n========================================\n");
-    if (root == nullptr) {
-        printf("PARSER FAILED!\n");
-        printf("Remaining string: '%s'\n", str_ptr);
-        printf("Tree root: %p\n", (void*)tree.root);
-    } else {
-        printf("PARSER SUCCESS!\n");
-        printf("Root node: %p\n", (void*)root);
-        tree.root = root;
+    if (!root) {
+        printf("Parser failed\n");
+        return 1;
+    }
+    
+    tree.root = root;
+    
+    printf("Tree root: %p\n", (void*)root);
+    
+    FILE* dot_file = fopen("tree.dot", "w");
+    if (!dot_file) {
+        printf("ERROR: Cannot create tree.dot\n");
+       
+        return 1;
+    }
+    
+    printf("File tree.dot opened successfully\n");
+    
+    DrawTree(&tree, tree.root, dot_file);
+    printf("DrawTree called\n");
+    
+    Node_Info progress = {};
+    ProgressTreeInit(&progress, &tree);
+    printf("Progress size: %zu\n", progress.size);
+    
+    SetRankToNodes(&tree, &progress, dot_file);
+    printf("SetRankToNodes called\n");
+    
+    FinishDotFile(dot_file);
+    printf("FinishDotFile called\n");
+    
+    fclose(dot_file);
+    printf("File closed\n");
+    
+    dot_file = fopen("tree.dot", "r");
+    if (dot_file) {
+        fseek(dot_file, 0, SEEK_END);
+        long size = ftell(dot_file);
+        fclose(dot_file);
+        printf("tree.dot size: %ld bytes\n", size);
         
-        Node_Info progress = {};
-        ProgressTreeInit(&progress, &tree);
-        
-        FILE* dot_file = fopen("tree.dot", "w");
-        if (dot_file) {
-            DrawTree(&tree, tree.root, dot_file);  
-            SetRankToNodes(&tree, &progress, dot_file); 
-            FinishDotFile(dot_file);
-            fclose(dot_file);
-            printf("Tree saved to tree.dot\n");
-            
+        if (size > 0) {
             system("dot -Tpng tree.dot -o tree.png 2>nul");
-            if (system("dot -V >nul 2>&1") == 0) {
-                printf("PNG saved to tree.png\n");
-            }
+            printf("PNG generated: tree.png\n");
         }
     }
-    printf("========================================\n");
     
-    fclose(fp); 
     return 0;
 }

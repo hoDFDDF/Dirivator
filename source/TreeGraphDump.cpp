@@ -16,37 +16,76 @@ void DrawTree(ExpressionTree_t* tree, Node_t* node, FILE* dot_file){
 
     fprintf (dot_file, "    labelloc=\"t\";\n");
 }
+
 void CreateNode(Node_t* node, FILE* dot_file, ExpressionTree_t* tree){
-    if (node == nullptr) return;
-    assert(tree != nullptr);
+    if (node == nullptr) {
+        printf("CreateNode: node is null\n");
+        return;
+    }
+    if (!tree || !dot_file) return;
     
-    const char* fillcolor =  "";
+    printf("CreateNode: node=%p, type=%d\n", (void*)node, node->type);
+    
+    const char* fillcolor = "";
     const char* color = "black";
 
     if (node == tree->root) {
-
-        fillcolor = brown;
-        color     = white;
-
+        fillcolor = "#5f3035";
+        color     = "#fdfdfd";
     } else if (node->left_child == nullptr || node->right_child == nullptr) {
-
-        fillcolor = swamp;
-        color     = white;
-
+        fillcolor = "#445c00";
+        color     = "#fdfdfd";
     } else {
-
-        fillcolor = turquoise;
-        color     =  white;
+        fillcolor = "#2799a0";
+        color     = "#fdfdfd";
     }
 
-    fprintf (dot_file, "    node%p [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'>"
-            "<TR><TD COLSPAN='2'>add: %p</TD></TR>"
-            "<TR><TD COLSPAN='2'>data: %s</TD></TR>"
-            "<TR><TD>LEFT</TD><TD>RIGHT</TD></TR>"
-            "<TR><TD>%p</TD><TD>%p</TD></TR></TABLE>>, "
-            "fillcolor=\"%s\", color=\"%s\", fontcolor=\"%s\"];\n",
-            (void*)node, (void*)node, node->tree_data, (void*)node->left_child, (void*)node->right_child, fillcolor, color, color);
+    char data_str[64] = "";
     
+    if (node->type == NUMBERTYPE) {
+        printf("  Type: NUMBER, value=%d\n", node->tree_data.numb);
+        sprintf(data_str, "NUM: %d", node->tree_data.numb);
+    } 
+    else if (node->type == VARIABLETYPE) {
+        printf("  Type: VARIABLE\n");
+        if (node->tree_data.varible) {
+            printf("  Var string: '%s'\n", node->tree_data.varible);
+            sprintf(data_str, "VAR: %s", node->tree_data.varible);
+        } else {
+            printf("  Var is NULL\n");
+            sprintf(data_str, "VAR: NULL");
+        }
+    }
+    else if (node->type == OPERATORTYPE) {
+        printf("  Type: OPERATOR\n");
+        if (node->tree_data.operat) {
+            printf("  Op string: '%s'\n", node->tree_data.operat);
+            sprintf(data_str, "OP: %s", node->tree_data.operat);
+        } else {
+            printf("  Op is NULL\n");
+            sprintf(data_str, "OP: NULL");
+        }
+    }
+    else if (node->type == NOTYPE) {
+        printf("  Type: NOTYPE\n");
+        sprintf(data_str, "NO TYPE");
+    }
+    else {
+        printf("  Type: UNKNOWN (%d)\n", node->type);
+        sprintf(data_str, "UNKNOWN: %d", node->type);
+    }
+
+    fprintf(dot_file, 
+        "    node%p [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'>"
+        "<TR><TD COLSPAN='2'>%p</TD></TR>"
+        "<TR><TD COLSPAN='2'>%s</TD></TR>"
+        "<TR><TD>%p</TD><TD>%p</TD></TR></TABLE>>, "
+        "fillcolor=\"%s\", color=\"%s\", fontcolor=\"%s\"];\n",
+        (void*)node, (void*)node, data_str, 
+        (void*)node->left_child, (void*)node->right_child, 
+        fillcolor, color, color);
+    
+    printf("  Written to dot\n");
 }
 
 void MakeArrow(Node_t* node, ExpressionTree_t* tree, FILE* dot_file){
@@ -69,52 +108,43 @@ void MakeArrow(Node_t* node, ExpressionTree_t* tree, FILE* dot_file){
 }
 
 void SetRankToNodes(ExpressionTree_t* tree, Node_Info* progress, FILE* dot_file){
+    printf("SetRankToNodes start\n");
     
-    assert(progress);
-    assert(tree);
-    assert(dot_file);
-
-    //TreeCreation
-    for (size_t curr_node = 0; curr_node < progress->size; curr_node++) {
-        Node_t* new_node = progress->nodes_array[curr_node].node;
-        size_t rank = progress->nodes_array[curr_node].rank;
-        
-        if (new_node == nullptr) continue;
-
-        CreateNode(new_node, dot_file, tree);
+    if (!progress) {
+        printf("progress null\n");
+        return;
     }
-
-    size_t max_depth = 0;
-    //fprintf(stdout, "progress size = %zu\n", progress->size);
+    if (!tree) {
+        printf("tree null\n");
+        return;
+    }
+    if (!dot_file) {
+        printf("dot_file null\n");
+        return;
+    }
+    
+    printf("Progress size: %zu\n", progress->size);
+    
     for (size_t i = 0; i < progress->size; i++) {
-        fprintf(stdout, "progress size = %zu\n", progress->size);
-        if (progress->nodes_array[i].node != nullptr) {
-            size_t curr_rank = progress->nodes_array[i].rank;
-                if (curr_rank > max_depth) {
-                    max_depth = curr_rank;
-                }
+        printf("Node %zu\n", i);
+        Node_t* node = progress->nodes_array[i].node;
+        if (node) {
+            printf("  Addr: %p\n", (void*)node);
+            CreateNode(node, dot_file, tree);
+        } else {
+            printf("  Null\n");
         }
     }
     
-    for (size_t node_rank = 0; node_rank <= max_depth; node_rank++) {
-        fprintf(dot_file, " { rank = same;");
-        fprintf(stdout, "max_depth = %zu", max_depth);
-        for (size_t rank_width = 0; rank_width < progress->size; rank_width++) {
-            fprintf(stdout, "I'm here");
-            if (progress->nodes_array[rank_width].rank == node_rank) {
-                fprintf(dot_file, "node%p", progress->nodes_array[rank_width].node);
-            }
+    printf("Arrows\n");
+    for (size_t i = 0; i < progress->size; i++) {
+        Node_t* node = progress->nodes_array[i].node;
+        if (node) {
+            MakeArrow(node, tree, dot_file);
         }
-        fprintf(dot_file, "}");
     }
-
-    for (size_t curr_node = 0; curr_node < progress->size; curr_node++) {
-        Node_t* node = progress->nodes_array[curr_node].node;
-        
-        if (node == nullptr) continue;
-
-        MakeArrow(node, tree, dot_file);
-    }    
+    
+    printf("SetRankToNodes end\n");
 }
 void FinishDotFile(FILE* dot_file){
     fprintf(dot_file, "}\n");

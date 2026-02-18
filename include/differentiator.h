@@ -16,7 +16,7 @@ enum TypeValue {
     TAN     =  8,
     LN      =  9,
     EXP     = 10,
-    NOTTYPE = 11
+    NOTTYPE =  11
 };
 
 Node_t* DifferentiateNode (ExpressionTree_t* tree, Node_t* node, char variable);

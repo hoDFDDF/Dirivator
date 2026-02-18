@@ -4,6 +4,7 @@
 #include "RecursiveDescentReadTree.h"
 #include "TreeGraphDump.h"
 #include "tree.h"
+#include "ConfolutionOfConstants.cpp"
 
 int main() {
     FILE* fp = fopen("Exception.txt", "r");
@@ -155,13 +156,15 @@ int main() {
     }
     
     FILE* derivated_exeption_file = fopen("result.txt", "w");
+    LatexDumpState latex = {derivated_exeption_file, 20};
+    SimplifyUntilStable(&derivated_tree, 20, &latex);
 
     PrintTreeToTXT(derivated_tree.root, derivated_exeption_file);
 
     TreeDtor(&tree, tree.root);
     TreeDtor(&derivated_tree, derivated_tree.root);
     fclose(derivated_exeption_file);
-       
+
     printf("\n=== DONE ===\n");
     
     return 0;

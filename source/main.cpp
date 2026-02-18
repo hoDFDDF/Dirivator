@@ -4,7 +4,7 @@
 #include "RecursiveDescentReadTree.h"
 #include "TreeGraphDump.h"
 #include "tree.h"
-#include "ConfolutionOfConstants.cpp"
+#include "ConvolutionOfConstants.h"
 
 int main() {
     FILE* fp = fopen("Exception.txt", "r");

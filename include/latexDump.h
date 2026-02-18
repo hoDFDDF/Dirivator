@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 struct LatexDumpState {
-    
+      
     FILE* file_ptr;
     int latex_dump_steps;
 

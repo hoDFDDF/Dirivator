@@ -35,8 +35,7 @@ Node_t* CreateOperatorNodeByEnum(ExpressionTree_t* tree, int op_code, Node_t* no
     return CreateOperatorNode(tree, op_str, node_left, node_right);
 }
 
-Node_t* CopySubtree (ExpressionTree_t* tree, Node_t* node)
-{
+Node_t* CopySubtree (ExpressionTree_t* tree, Node_t* node){
     assert (tree);
 
     if (!node) return nullptr;
@@ -49,8 +48,7 @@ Node_t* CopySubtree (ExpressionTree_t* tree, Node_t* node)
     return new_node;
 }
 
-Node_t* DifferentiateNode (ExpressionTree_t* tree, Node_t* node, char variable)
-{
+Node_t* DifferentiateNode (ExpressionTree_t* tree, Node_t* node, char variable){
     assert(tree);
 
     if (!node) {
@@ -60,31 +58,32 @@ Node_t* DifferentiateNode (ExpressionTree_t* tree, Node_t* node, char variable)
 
     printf("DifferentiateNode: node=%p, type=%d\n", (void*)node, node->type);
 
-    switch (node->type)
-    {
+    switch (node->type) {
         case NUMBERTYPE:
         {
             printf("  Number: %d -> derivative = 0\n", node->tree_data.numb);
-            expr_type data = {};
+            expr_type data = {0};
             data.numb = 0;
-            return NodeCtor(data, tree, NUMBERTYPE);
+            Node_t* zero_node = NodeCtor(data, tree, NUMBERTYPE);
+            printf("  Created zero node: %p, type=%d\n", (void*)zero_node, zero_node->type);
+            return zero_node;
         }
         case VARIABLETYPE:
         {
             char node_var_name = node->tree_data.varible[0];
-            printf("  Variable: %c", node_var_name);
+            printf("  Variable: %c\n", node_var_name);
             
-            if (node_var_name == variable)
-            {
-                printf(" (same as %c) -> derivative = 1\n", variable);
-                expr_type data = {};
+            if (node_var_name == variable) {
+                printf("    derivative = 1\n");
+                expr_type data = {0};
                 data.numb = 1;
-                return NodeCtor(data, tree, NUMBERTYPE);
+                Node_t* one_node = NodeCtor(data, tree, NUMBERTYPE);
+                printf("    Created one node: %p, type=%d\n", (void*)one_node, one_node->type);
+                return one_node;
             }
-            else
-            {
-                printf(" (different from %c) -> derivative = 0\n", variable);
-                expr_type data = {};
+            else {
+                printf("    derivative = 0\n");
+                expr_type data = {0};
                 data.numb = 0;
                 return NodeCtor(data, tree, NUMBERTYPE);
             }
@@ -100,16 +99,14 @@ Node_t* DifferentiateNode (ExpressionTree_t* tree, Node_t* node, char variable)
     }
 }
 
-Node_t* DifferentiateOperator (ExpressionTree_t* tree, Node_t* node, char variable)
-{
+Node_t* DifferentiateOperator (ExpressionTree_t* tree, Node_t* node, char variable){
     assert (tree);
 
     Node_t* result = NULL;
 
     int op_code = get_operator_code(node->tree_data.operat);
 
-    switch (op_code)
-    {
+    switch (op_code) {
         case ADD:
         {
             result = ADD_(dL, dR);
@@ -137,8 +134,7 @@ Node_t* DifferentiateOperator (ExpressionTree_t* tree, Node_t* node, char variab
         }
         case POW:
         {
-            if (node->right_child->type == NUMBERTYPE)
-            {
+            if (node->right_child->type == NUMBERTYPE) {
                int power = node->right_child->tree_data.numb;
                result = MUL_(
                     MUL_(
@@ -148,12 +144,10 @@ Node_t* DifferentiateOperator (ExpressionTree_t* tree, Node_t* node, char variab
                     dL                                // f'
                 );
             }
-            else if (node->left_child->type == NUMBERTYPE)
-            {
+            else if (node->left_child->type == NUMBERTYPE) {
                 result = MUL_(MUL_(POW_(cL, cR), LN_(cL)), dR);
             }
-            else
-            {
+            else {
                 Node_t* y = POW_(cL, cR);
                 Node_t* term1 = MUL_(dR, LN_(cL));
                 Node_t* term2 = MUL_(cR, DIV_(dL, cL));
@@ -194,8 +188,7 @@ Node_t* DifferentiateOperator (ExpressionTree_t* tree, Node_t* node, char variab
 }
 
 
-Node_t* NewNode (ExpressionTree_t* tree, int type, expr_type value, Node_t* left, Node_t* right)
-{
+Node_t* NewNode (ExpressionTree_t* tree, int type, expr_type value, Node_t* left, Node_t* right){
     assert (tree);
 
     Node_t* new_node = NodeCtor (value, tree, type);

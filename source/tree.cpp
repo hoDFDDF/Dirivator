@@ -1,6 +1,6 @@
 #include "tree.h"
 
-Node_t* NodeCtor(expr_type data, ExpressionTree_t* tree, int node_type) {
+Node_t* NodeCtor(expr_type data, ExpressionTree_t* tree, int node_type){
     Node_t* new_node = (Node_t*)calloc(1, sizeof(Node_t));
     if (!new_node) return nullptr;
     
@@ -19,7 +19,7 @@ void TreeCtor(ExpressionTree_t* tree){
     tree->size = 0;
 }
 
-void PrintTreeToTXT(Node_t* node, FILE* file_ptr) {
+void PrintTreeToTXT(Node_t* node, FILE* file_ptr){
     if (!node) {
         printf("PrintTreeToTXT: node is NULL\n");
         return;

@@ -153,7 +153,7 @@ void FinishDotFile(FILE* dot_file){
 void ProgressTreeInit(Node_Info* progress, ExpressionTree_t* tree){
     if (progress == nullptr || tree == nullptr) return;
     
-    progress->capacity = 32;
+    progress->capacity = 64;
     progress->nodes_array = (LoadNodeProgress*)calloc(progress->capacity, sizeof(LoadNodeProgress));
     progress->size = 0;
     RecursiveFillNodeInfoProgress(progress, tree->root, 0);

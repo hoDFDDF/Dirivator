@@ -3,27 +3,27 @@
 
 #include <stdio.h>
 
-struct LatexDumpState {
-      
+#include "tree.h"
+
+#define MAX_LATEX_EXPRESSION_LENGTH 4096
+#define MAX_STR_SIZE 256
+
+typedef struct {
     FILE* file_ptr;
-    int latex_dump_steps;
+    const char* filename;
+    int step_counter;
+    int current_funny_index;
+    const char** funny_phrases;
+    int funny_phrases_count;
+} LatexDumpState;
 
-};
+void CtorLatexDump(LatexDumpState* state, const char* filename);
+void DtorLatexDump(LatexDumpState* state);
+void AddLatexStep(LatexDumpState* state, const char* description, ExpressionTree_t* tree);
+void PrintTreeLatex(FILE* file, Node_t* node);
+void NodeToLatexString(Node_t* node, char* buffer, int* pos, int buffer_size);
 
-int StartLatexDump (FILE* file_ptr);
-int EndLatexDump (FILE* file_ptr);
-int DumpOriginalFunctionToFile (FILE* file_ptr, ExpressionTree_t* tree, double result_value);
-int DumpOptimizationStepToFile (FILE* file_ptr, const char* description, ExpressionTree_t* tree, double result_value);
-int DumpDerivativeToFile (FILE* file_ptr, ExpressionTree_t* derivative_tree, double derivative_result, int derivative_order);
+int StartLatexDump(FILE* file);
+int EndLatexDump(FILE* file);
 
-void NodeToLatexString (Node_t* node, char* buffer, int* pos, int buffer_size);
-void CtorLatexDump (LatexDumpState* state, const char* filename);
-void AddLatexStep (LatexDumpState* state, const char* description, ExpressionTree_t* tree);
-void DtorLatexDump (LatexDumpState* state);
-void PrintTreeLatex (FILE* file_ptr, Node_t* node);
-void LatexDumpDifferentiationStep (LatexDumpState* state, const char* rule_used, ExpressionTree_t* original, ExpressionTree_t* derivative);
-void LatexDumpSimplifyStep (LatexDumpState* state, const char* rule_used, ExpressionTree_t* before, ExpressionTree_t* after);
-void LatexDumpDetailedProcess (ExpressionTree_t* original, ExpressionTree_t* derivative);
-
-
-#endif //LATEX_H_
+#endif // LATEX_H_

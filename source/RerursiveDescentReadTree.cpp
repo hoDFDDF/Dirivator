@@ -7,8 +7,7 @@ void ReadDataFromFile(TreeFile *text_tree, FILE *tree_file_ptr, ExpressionTree_t
 
     size_t buffer_size = 4096;
     char *buffer = (char *)calloc(1, buffer_size);
-    if (!buffer)
-    {
+    if (!buffer) {
         printf("ERROR: Memory allocation failed\n");
         return;
     }
@@ -30,23 +29,20 @@ void ReadDataFromFile(TreeFile *text_tree, FILE *tree_file_ptr, ExpressionTree_t
         }
     }
 
-    if (total_read == 0)
-    {
+    if (total_read == 0) {
         printf("ERROR: Empty file or read error\n");
         free(buffer);
         return;
     }
 
-    if (buffer[total_read - 1] == '\n')
-    {
+    if (buffer[total_read - 1] == '\n') {
         buffer[total_read - 1] = '\0';
         total_read--;
     }
 
     printf("Read string (%zu chars): %s\n", total_read, buffer);
 
-    if (strlen(buffer) == 0)
-    {
+    if (strlen(buffer) == 0) {
         printf("ERROR: Empty string read from file\n");
         free(buffer);
         return;
@@ -59,18 +55,14 @@ void ReadDataFromFile(TreeFile *text_tree, FILE *tree_file_ptr, ExpressionTree_t
 
     printf("Parse completed. str_ptr now at: '%s'\n", str_ptr);
 
-    if (tree->root == nullptr)
-    {
+    if (tree->root == nullptr) {
         printf("ERROR: Failed to parse tree from file\n");
-    }
-    else
-    {
+    } else{
         printf("Tree parsed successfully. Root: %s\n", tree->root->tree_data);
     }
 }
 
-void SkipSpaces(char **exp)
-{
+void SkipSpaces(char **exp){
     assert(exp != nullptr);
     while (**exp && isspace(**exp))
     {
@@ -78,15 +70,14 @@ void SkipSpaces(char **exp)
     }
 }
 
-Node_t *GetN(MathExpression *math_exp, char **exp_from_file) {
+Node_t *GetN(MathExpression *math_exp, char **exp_from_file){
     assert(math_exp != nullptr);
 
     if (!('0' <= **exp_from_file && **exp_from_file <= '9'))
         return nullptr;
 
     int value = 0; 
-    while ('0' <= **exp_from_file && **exp_from_file <= '9')
-    {
+    while ('0' <= **exp_from_file && **exp_from_file <= '9') {
         value = value * 10 + (**exp_from_file - '0');
         (*exp_from_file)++;
     }
@@ -94,8 +85,7 @@ Node_t *GetN(MathExpression *math_exp, char **exp_from_file) {
     return CreateNumberNode(math_exp->tree, value);
 }
 
-Node_t *GetT(MathExpression *math_exp, char **exp_from_file)
-{
+Node_t *GetT(MathExpression *math_exp, char **exp_from_file){
     printf("=== GetT START ===\n");
     printf("String: '%s'\n", *exp_from_file);
     
@@ -103,32 +93,24 @@ Node_t *GetT(MathExpression *math_exp, char **exp_from_file)
     printf("GetP returned: %p\n", (void*)val);
     printf("After GetP: '%s'\n", *exp_from_file);
     
-    while (**exp_from_file == '*' || **exp_from_file == '/')
-    {
-        printf("GetT: Found explicit operator '%c'\n", **exp_from_file);
-        char op = **exp_from_file;
-        (*exp_from_file)++;
-        char op_str[2] = {op, '\0'};
-
-        Node_t *right = GetP(math_exp, exp_from_file);
-        printf("GetT: Creating operator node for '%c'\n", op);
-        val = CreateOperatorNode(math_exp->tree, op_str, val, right);
-    }
-    
-    printf("Before implicit multiplication check: '%s'\n", *exp_from_file);
-    
-    if (val && (isdigit(**exp_from_file) || isalpha(**exp_from_file) || **exp_from_file == '('))
-    {
-        printf("GetT: IMPLICIT MULTIPLICATION DETECTED!\n");
-        printf("Left value exists, next char is '%c'\n", **exp_from_file);
+    while (1) {
+        SkipSpaces(exp_from_file);
         
-        char op_str[2] = {'*', '\0'};
-        Node_t *right = GetP(math_exp, exp_from_file);
-        if (right) {
-            printf("GetT: Creating implicit '*' node\n");
+        if (**exp_from_file == '*' || **exp_from_file == '/') {
+            printf("GetT: Found operator '%c'\n", **exp_from_file);
+            char op_str[2] = {**exp_from_file, '\0'};
+            (*exp_from_file)++;
+            Node_t *right = GetP(math_exp, exp_from_file);
             val = CreateOperatorNode(math_exp->tree, op_str, val, right);
-        } else {
-            printf("GetT: Failed to get right operand for implicit multiplication\n");
+        }
+        else if (val && (isdigit(**exp_from_file) || isalpha(**exp_from_file) || **exp_from_file == '(')) {
+            printf("GetT: Implicit multiplication at '%c'\n", **exp_from_file);
+            char op_str[2] = {'*', '\0'};
+            Node_t *right = GetP(math_exp, exp_from_file);
+            val = CreateOperatorNode(math_exp->tree, op_str, val, right);
+        }
+        else {
+            break;
         }
     }
     
@@ -136,8 +118,7 @@ Node_t *GetT(MathExpression *math_exp, char **exp_from_file)
     return val;
 }
 
-Node_t *GetE(MathExpression *math_exp, char **exp_from_file)
-{
+Node_t *GetE(MathExpression *math_exp, char **exp_from_file){
     printf("=== GetE START ===\n");
     printf("String: '%s'\n", *exp_from_file);
     
@@ -145,8 +126,7 @@ Node_t *GetE(MathExpression *math_exp, char **exp_from_file)
     printf("GetT returned: %p\n", (void*)val);
     printf("After GetT: '%s'\n", *exp_from_file);
     
-    while (**exp_from_file == '+' || **exp_from_file == '-')
-    {
+    while (**exp_from_file == '+' || **exp_from_file == '-') {
         printf("GetE: Found operator '%c'\n", **exp_from_file);
         char op = **exp_from_file;
         (*exp_from_file)++;
@@ -161,56 +141,66 @@ Node_t *GetE(MathExpression *math_exp, char **exp_from_file)
     return val;
 }
 
-Node_t *GetP(MathExpression *math_exp, char **exp_from_file)
-{
+Node_t *GetP(MathExpression *math_exp, char **exp_from_file){
     printf("=== GetP START ===\n");
     printf("String: '%s'\n", *exp_from_file);
     
-    if (**exp_from_file == '(')
-    {
+    SkipSpaces(exp_from_file);
+    
+    Node_t* result = nullptr;
+    
+    if (**exp_from_file == '(') {
         printf("GetP: Found '('\n");
         (*exp_from_file)++;
-        Node_t *val = GetE(math_exp, exp_from_file);
+        SkipSpaces(exp_from_file);
         
+        result = GetE(math_exp, exp_from_file);
+        
+        SkipSpaces(exp_from_file);
         if (**exp_from_file == ')')
         {
             printf("GetP: Found ')'\n");
             (*exp_from_file)++;
         }
-        printf("=== GetP END (parens), returning: %p ===\n", (void*)val);
-        return val;
+        else
+        {
+            printf("GetP: ERROR - expected ')'\n");
+        }
+        
+        printf("=== GetP END (parens), returning: %p ===\n", (void*)result);
+        return result;
     }
-    else if (isdigit(**exp_from_file))
-    {
+    else if (isdigit(**exp_from_file)) {
         printf("GetP: Calling GetN for number\n");
-        Node_t* result = GetN(math_exp, exp_from_file);
+        result = GetN(math_exp, exp_from_file);
         printf("=== GetP END (number), returning: %p ===\n", (void*)result);
         return result;
     }
-    else if (isalpha(**exp_from_file))
-    {
-         if (strncmp(*exp_from_file, "sin", 3) == 0 || 
+    else if (isalpha(**exp_from_file)) {
+        if (strncmp(*exp_from_file, "sin", 3) == 0 || 
             strncmp(*exp_from_file, "cos", 3) == 0 ||
             strncmp(*exp_from_file, "tan", 3) == 0 ||
             strncmp(*exp_from_file, "ln", 2) == 0 ||
-            strncmp(*exp_from_file, "exp", 3) == 0) {
-            
+            strncmp(*exp_from_file, "exp", 3) == 0 ||
+            strncmp(*exp_from_file, "log", 3) == 0 ||
+            strncmp(*exp_from_file, "sqrt", 4) == 0)
+        {
             printf("GetP: Calling GetF for function\n");
-            return GetF(math_exp, exp_from_file);
+            result = GetF(math_exp, exp_from_file);
         } else {
             printf("GetP: Calling GetV for variable\n");
-            Node_t* result = GetV(math_exp, exp_from_file);
-            printf("=== GetP END (variable), returning: %p ===\n", (void*)result);
-            return result;
+            result = GetV(math_exp, exp_from_file);
         }
+        printf("=== GetP END (variable/function), returning: %p ===\n", (void*)result);
+        return result;
     }
-
+    
     printf("GetP: Nothing found, returning nullptr\n");
     return nullptr;
 }
 
 
-Node_t* GetA(MathExpression *math_exp, char **exp_from_file) { 
+Node_t* GetA(MathExpression *math_exp, char **exp_from_file){ 
     printf("=== GetA START ===\n");
     printf("String: '%s'\n", *exp_from_file);
     
@@ -256,8 +246,7 @@ Node_t* GetA(MathExpression *math_exp, char **exp_from_file) {
     return assign_node;
 }
 
-Node_t *GetV(MathExpression *math_exp, char **exp_from_file)
-{
+Node_t *GetV(MathExpression *math_exp, char **exp_from_file){
     printf("=== GetV START ===\n");
     printf("String: '%s'\n", *exp_from_file);
     

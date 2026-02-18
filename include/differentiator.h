@@ -4,7 +4,6 @@
 #include "DSL.h"
 #include "RecursiveDescentReadTree.h"
 
-
 enum TypeValue {
     ADD     =  1,
     SUB     =  2,

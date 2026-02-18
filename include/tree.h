@@ -48,7 +48,6 @@ struct Node_Info{
     size_t size;
 };
 
-
 enum Child {
     LEFT_CHILD,
     RIGHT_CHILD

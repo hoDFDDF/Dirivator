@@ -8,6 +8,7 @@
 #include <ctype.h>
 
 #include "tree.h"
+#include "differentiator.h"
 
 const size_t VAR_MAX_SIZE                = 16;
 const size_t MAX_LEGHT_OF_DATA         = 4096;
@@ -17,15 +18,6 @@ enum DescentSyntaxEror_t{
     INCORRECT_EQUATION,
     INCORRECT_VALUE_NAME,
 };
-
-enum AvaliableFunctions{
-    SIN,
-    COS,
-    LN,
-    EXP,
-    UNNOWNFUNC
-};
-
 
 enum AvaliableVariables{
     x,
@@ -53,8 +45,9 @@ Node_t* GetE(MathExpression* math_exp , char** exp_from_file);
 Node_t* GetT(MathExpression* math_exp , char** exp_from_file);
 Node_t* GetA(MathExpression* math_exp , char** exp_from_file);
 Node_t *GetV(MathExpression *math_exp , char **exp_from_file);
+Node_t* GetF(MathExpression* math_exp , char** exp_from_file);
 
-void ReadDataFromFile(TreeFile* text_tree, FILE* tree_file_ptr, ExpressionTree_t* tree);
+void ReadDataFromFile(TreeFile *text_tree, FILE *tree_file_ptr, ExpressionTree_t *tree, MathExpression *math_exp);
 void SkipSpaces(char** exp);
 
 #endif //_READ_TREE_BY_RECURSIVE_DESCENT_H_

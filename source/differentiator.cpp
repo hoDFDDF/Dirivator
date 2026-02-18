@@ -1,7 +1,5 @@
 #include "differentiator.h"
 
-
-
 char* OperatorToString(int op) {
     switch(op) {
         case ADD: return "+";
@@ -16,6 +14,20 @@ char* OperatorToString(int op) {
         case EXP: return "exp";
         default: return "";
     }
+}
+
+int get_operator_code(char* op_str) {
+    if (strcmp(op_str, "+") == 0) return ADD;
+    if (strcmp(op_str, "-") == 0) return SUB;
+    if (strcmp(op_str, "*") == 0) return MUL;
+    if (strcmp(op_str, "/") == 0) return DIV;
+    if (strcmp(op_str, "^") == 0) return POW;
+    if (strcmp(op_str, "sin") == 0) return SIN;
+    if (strcmp(op_str, "cos") == 0) return COS;
+    if (strcmp(op_str, "tan") == 0) return TAN;
+    if (strcmp(op_str, "ln") == 0) return LN;
+    if (strcmp(op_str, "exp") == 0) return EXP;
+    return 0;
 }
 
 Node_t* CreateOperatorNodeByEnum(ExpressionTree_t* tree, int op_code, Node_t* node_left, Node_t* node_right){
@@ -39,51 +51,64 @@ Node_t* CopySubtree (ExpressionTree_t* tree, Node_t* node)
 
 Node_t* DifferentiateNode (ExpressionTree_t* tree, Node_t* node, char variable)
 {
-    assert (tree);
+    assert(tree);
 
-    if (!node) return nullptr;
+    if (!node) {
+        printf("DifferentiateNode: node is NULL\n");
+        return nullptr;
+    }
+
+    printf("DifferentiateNode: node=%p, type=%d\n", (void*)node, node->type);
 
     switch (node->type)
     {
         case NUMBERTYPE:
         {
+            printf("  Number: %d -> derivative = 0\n", node->tree_data.numb);
             expr_type data = {};
             data.numb = 0;
-            return NodeCtor (data, tree, NUMBERTYPE);
+            return NodeCtor(data, tree, NUMBERTYPE);
         }
         case VARIABLETYPE:
         {
             char node_var_name = node->tree_data.varible[0];
+            printf("  Variable: %c", node_var_name);
             
             if (node_var_name == variable)
             {
+                printf(" (same as %c) -> derivative = 1\n", variable);
                 expr_type data = {};
                 data.numb = 1;
-                return NodeCtor (data, tree, NUMBERTYPE);
+                return NodeCtor(data, tree, NUMBERTYPE);
             }
             else
             {
+                printf(" (different from %c) -> derivative = 0\n", variable);
                 expr_type data = {};
                 data.numb = 0;
-                return NodeCtor (data, tree, NUMBERTYPE);
+                return NodeCtor(data, tree, NUMBERTYPE);
             }
         }
         case OPERATORTYPE:
         {
-            return DifferentiateOperator (tree, node, variable);
+            printf("  Operator: '%s'\n", node->tree_data.operat);
+            return DifferentiateOperator(tree, node, variable);
         }
         default:
+            printf("  Unknown type: %d\n", node->type);
             return NULL;
     }
 }
 
-Node_t* DifferentiateOperator (Tree_t* tree, Node_t* node, char variable)
+Node_t* DifferentiateOperator (ExpressionTree_t* tree, Node_t* node, char variable)
 {
     assert (tree);
 
     Node_t* result = NULL;
 
-    switch (node->value.operator_type)
+    int op_code = get_operator_code(node->tree_data.operat);
+
+    switch (op_code)
     {
         case ADD:
         {
@@ -97,9 +122,9 @@ Node_t* DifferentiateOperator (Tree_t* tree, Node_t* node, char variable)
         }
         case MUL:
         {
-            if (node->left->type == NUMBERTYPE)
+            if (node->left_child->type == NUMBERTYPE)
                 return MUL_(cL, dR);
-            else if (node->right->type == NUMBERTYPE)
+            else if (node->right_child->type == NUMBERTYPE)
                 return MUL_(dL, cR);
             else
                 return ADD_(MUL_(dL, cR), MUL_(cL, dR));
@@ -112,11 +137,18 @@ Node_t* DifferentiateOperator (Tree_t* tree, Node_t* node, char variable)
         }
         case POW:
         {
-            if (node->right->type == NUMBERTYPE)
+            if (node->right_child->type == NUMBERTYPE)
             {
-                result = MUL_(MUL_(NUM_(node->right->value.number), POW_(cL, NUM_(node->right->value.number - 1))), dL);
+               int power = node->right_child->tree_data.numb;
+               result = MUL_(
+                    MUL_(
+                        NUM_(power),              // n
+                        POW_(cL, NUM_(power - 1)) // f^(n-1)
+                    ), 
+                    dL                                // f'
+                );
             }
-            else if (node->left->type == NUMBERTYPE)
+            else if (node->left_child->type == NUMBERTYPE)
             {
                 result = MUL_(MUL_(POW_(cL, cR), LN_(cL)), dR);
             }

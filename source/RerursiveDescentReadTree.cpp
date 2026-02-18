@@ -108,9 +108,11 @@ Node_t *GetT(MathExpression *math_exp, char **exp_from_file)
         printf("GetT: Found explicit operator '%c'\n", **exp_from_file);
         char op = **exp_from_file;
         (*exp_from_file)++;
+        char op_str[2] = {op, '\0'};
+
         Node_t *right = GetP(math_exp, exp_from_file);
         printf("GetT: Creating operator node for '%c'\n", op);
-        val = CreateOperatorNode(math_exp->tree, &op, val, right);
+        val = CreateOperatorNode(math_exp->tree, op_str, val, right);
     }
     
     printf("Before implicit multiplication check: '%s'\n", *exp_from_file);
@@ -120,11 +122,11 @@ Node_t *GetT(MathExpression *math_exp, char **exp_from_file)
         printf("GetT: IMPLICIT MULTIPLICATION DETECTED!\n");
         printf("Left value exists, next char is '%c'\n", **exp_from_file);
         
-        char op = '*';
+        char op_str[2] = {'*', '\0'};
         Node_t *right = GetP(math_exp, exp_from_file);
         if (right) {
             printf("GetT: Creating implicit '*' node\n");
-            val = CreateOperatorNode(math_exp->tree, &op, val, right);
+            val = CreateOperatorNode(math_exp->tree, op_str, val, right);
         } else {
             printf("GetT: Failed to get right operand for implicit multiplication\n");
         }
@@ -148,9 +150,11 @@ Node_t *GetE(MathExpression *math_exp, char **exp_from_file)
         printf("GetE: Found operator '%c'\n", **exp_from_file);
         char op = **exp_from_file;
         (*exp_from_file)++;
+        char op_str[2] = {op, '\0'};
+
         Node_t *right = GetT(math_exp, exp_from_file);
         printf("GetE: Creating operator node for '%c'\n", op);
-        val = CreateOperatorNode(math_exp->tree, &op, val, right);
+        val = CreateOperatorNode(math_exp->tree, op_str, val, right);
     }
     
     printf("=== GetE END, returning: %p ===\n", (void*)val);
@@ -185,12 +189,22 @@ Node_t *GetP(MathExpression *math_exp, char **exp_from_file)
     }
     else if (isalpha(**exp_from_file))
     {
-        printf("GetP: Calling GetV for variable\n");
-        Node_t* result = GetV(math_exp, exp_from_file);
-        printf("=== GetP END (variable), returning: %p ===\n", (void*)result);
-        return result;
+         if (strncmp(*exp_from_file, "sin", 3) == 0 || 
+            strncmp(*exp_from_file, "cos", 3) == 0 ||
+            strncmp(*exp_from_file, "tan", 3) == 0 ||
+            strncmp(*exp_from_file, "ln", 2) == 0 ||
+            strncmp(*exp_from_file, "exp", 3) == 0) {
+            
+            printf("GetP: Calling GetF for function\n");
+            return GetF(math_exp, exp_from_file);
+        } else {
+            printf("GetP: Calling GetV for variable\n");
+            Node_t* result = GetV(math_exp, exp_from_file);
+            printf("=== GetP END (variable), returning: %p ===\n", (void*)result);
+            return result;
+        }
     }
-    
+
     printf("GetP: Nothing found, returning nullptr\n");
     return nullptr;
 }
@@ -275,23 +289,78 @@ Node_t *GetV(MathExpression *math_exp, char **exp_from_file)
     return var;
 }
 
-
-#if 0
-Node_t* GetF(MathExpression* math_exp , char** exp_from_file){ 
-    char* equation = *exp_from_file;
-    aval_funcs operator = UNNOWNFUNC;
+Node_t* GetF(MathExpression* math_exp, char** exp_from_file){ 
+    char* start_pos = *exp_from_file;
+    printf("GetF: parsing function at '%s'\n", *exp_from_file);
     
-    switch(equation) {
-        case sin:
-            operator = SIN;
-        case cos:
-            operator = COS;
-        case exp:
-            operator = EXP
+    TypeValue operat = NOTTYPE;  
+    
+    if (strncmp(*exp_from_file, "sin", 3) == 0) {
+        operat = SIN;
+        (*exp_from_file) += 3;
+        printf("GetF: found sin\n");
+    } else if (strncmp(*exp_from_file, "cos", 3) == 0) {
+        operat = COS;
+        (*exp_from_file) += 3;
+        printf("GetF: found cos\n");
+    } else if (strncmp(*exp_from_file, "tan", 3) == 0) {
+        operat = TAN;
+        (*exp_from_file) += 3;
+        printf("GetF: found tan\n");
+    } else if (strncmp(*exp_from_file, "ln", 2) == 0) {
+        operat = LN;
+        (*exp_from_file) += 2;
+        printf("GetF: found ln\n");
+    } else if (strncmp(*exp_from_file, "exp", 3) == 0) {
+        operat = EXP;
+        (*exp_from_file) += 3;
+        printf("GetF: found exp\n");
+    } else {
+        printf("Error: unknown function at '%s'\n", *exp_from_file);
+        return nullptr;
     }
-    Node_t* operat = CreateOperatorNode();//TODO write this
+
+    printf("GetF: after function name, at '%s'\n", *exp_from_file);
+    SkipSpaces(exp_from_file); 
+    printf("GetF: after spaces, at '%s'\n", *exp_from_file);
+    
+    if (**exp_from_file != '(') {
+        printf("GetF: expected '(', got '%c'\n", **exp_from_file);
+        *exp_from_file = start_pos;
+        return nullptr;
+    }
+    
+    (*exp_from_file)++;
+    printf("GetF: after '(', at '%s'\n", *exp_from_file);
+    
+    SkipSpaces(exp_from_file);
+    printf("GetF: parsing argument at '%s'\n", *exp_from_file);
+    Node_t* arg = GetE(math_exp, exp_from_file);
+    if (!arg) {
+        printf("GetF: failed to parse argument\n");
+        *exp_from_file = start_pos;
+        return nullptr;
+    }
+
+    printf("GetF: after argument, at '%s'\n", *exp_from_file);
+    SkipSpaces(exp_from_file);
+
+    if (**exp_from_file != ')') {
+        printf("GetF: expected ')', got '%c'\n", **exp_from_file);
+        *exp_from_file = start_pos;
+        return nullptr;
+    }
+    (*exp_from_file)++;
+    printf("GetF: after ')', at '%s'\n", *exp_from_file);
+    
+    char* op_str = OperatorToString(operat);
+
+    Node_t* func = CreateOperatorNode(math_exp->tree, op_str, arg, nullptr);
+
+    printf("GetF: created function node %p\n", (void*)func);
+    
+    return func;
 }
-#endif
 
 Node_t *GetG(MathExpression *math_exp, char **exp_from_file){
     printf("=== GetG START ===\n");

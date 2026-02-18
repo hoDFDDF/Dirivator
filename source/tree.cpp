@@ -19,8 +19,39 @@ void TreeCtor(ExpressionTree_t* tree){
     tree->size = 0;
 }
 
-Node_t* NodeDtor(){ 
+void PrintTreeToTXT(Node_t* node, FILE* file_ptr) {
+    if (!node) {
+        printf("PrintTreeToTXT: node is NULL\n");
+        return;
+    }
     
+    printf("PrintTreeToTXT: node=%p, type=%d\n", (void*)node, node->type);
+    
+    PrintTreeToTXT(node->left_child, file_ptr);
+    PrintTreeToTXT(node->right_child, file_ptr);
+    
+    if (node->type == NUMBERTYPE) {
+        printf("  Writing number: %d\n", node->tree_data.numb);
+        fprintf(file_ptr, "%d ", node->tree_data.numb);
+    }
+    else if (node->type == VARIABLETYPE) {
+        printf("  Writing variable: %s\n", node->tree_data.varible);
+        fprintf(file_ptr, "%s ", node->tree_data.varible);
+    }
+    else if (node->type == OPERATORTYPE) {
+        printf("  Writing operator: %s\n", node->tree_data.operat);
+        fprintf(file_ptr, "%s ", node->tree_data.operat);
+    }
+}
+
+Node_t* TreeDtor(ExpressionTree_t* tree, Node_t* node){ 
+    if (tree) {
+        TreeDelete(tree,node);
+        tree->root = nullptr;
+        tree->size = 0;
+    }
+    
+    return nullptr;
 }
 
 TreeError_t TreeInsert(ExpressionTree_t* tree, Node_t* node, expr_type data, Child child){ 
@@ -124,12 +155,7 @@ Node_t* DeleteSubTree(Node_t* node){
 Node_t* CreateOperatorNode(ExpressionTree_t* tree, char* op_code, Node_t* node_left, Node_t* node_right){
     union expr_type value = {0};
     
-    char* op_copy = (char*)calloc(2, sizeof(char));
-    if (op_copy) {
-        op_copy[0] = op_code[0];
-        op_copy[1] = '\0';
-        value.operat = op_copy;
-    }
+    value.operat = strdup(op_code);
     
     Node_t* new_node = NodeCtor(value, tree, OPERATORTYPE);
     

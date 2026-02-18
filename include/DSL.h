@@ -1,7 +1,6 @@
 #ifndef _DSL_H_
 #define _DSL_H_
 
-
 #define dL                  DifferentiateNode (tree, node->left_child,  variable)
 #define dR                  DifferentiateNode (tree, node->right_child, variable)
 #define cL                  CopySubtree (tree, node->left_child)

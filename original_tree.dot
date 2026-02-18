@@ -1,0 +1,42 @@
+digraph tree{
+    charset="UTF-8";
+    bgcolor="#001f29";
+     rankdir = TB;
+    nodesep = 0.5;
+    ranksep = 0.7;
+    node [shape=plaintext, style=filled, fontname="Arial"];
+    edge [fontname="Arial"];
+
+    labelloc="t";
+    node000001a05343ead0 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343ead0</TD></TR><TR><TD COLSPAN='2'>OP: +</TD></TR><TR><TD>000001a05343e9b0</TD><TD>000001a05343ea70</TD></TR></TABLE>>, fillcolor="#5f3035", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e9b0 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e9b0</TD></TR><TR><TD COLSPAN='2'>OP: +</TD></TR><TR><TD>000001a05343e950</TD><TD>000001a05343e860</TD></TR></TABLE>>, fillcolor="#2799a0", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e950 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e950</TD></TR><TR><TD COLSPAN='2'>OP: -</TD></TR><TR><TD>000001a05343e980</TD><TD>000001a05343eb60</TD></TR></TABLE>>, fillcolor="#2799a0", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e980 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e980</TD></TR><TR><TD COLSPAN='2'>OP: +</TD></TR><TR><TD>000001a05343eb90</TD><TD>000001a05343e830</TD></TR></TABLE>>, fillcolor="#2799a0", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343eb90 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343eb90</TD></TR><TR><TD COLSPAN='2'>OP: *</TD></TR><TR><TD>000001a05343e8f0</TD><TD>000001a05343e920</TD></TR></TABLE>>, fillcolor="#2799a0", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e8f0 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e8f0</TD></TR><TR><TD COLSPAN='2'>NUM: 3</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e920 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e920</TD></TR><TR><TD COLSPAN='2'>VAR: x</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e830 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e830</TD></TR><TR><TD COLSPAN='2'>NUM: 5</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343eb60 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343eb60</TD></TR><TR><TD COLSPAN='2'>NUM: 9</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e860 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e860</TD></TR><TR><TD COLSPAN='2'>OP: *</TD></TR><TR><TD>000001a05343ea10</TD><TD>000001a05343eaa0</TD></TR></TABLE>>, fillcolor="#2799a0", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343ea10 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343ea10</TD></TR><TR><TD COLSPAN='2'>NUM: 89</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343eaa0 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343eaa0</TD></TR><TR><TD COLSPAN='2'>VAR: x</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343ea70 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343ea70</TD></TR><TR><TD COLSPAN='2'>OP: sin</TD></TR><TR><TD>000001a05343e8c0</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e8c0 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e8c0</TD></TR><TR><TD COLSPAN='2'>OP: *</TD></TR><TR><TD>000001a05343e9e0</TD><TD>000001a05343ea40</TD></TR></TABLE>>, fillcolor="#2799a0", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343e9e0 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343e9e0</TD></TR><TR><TD COLSPAN='2'>NUM: 3</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343ea40 [label=<<TABLE BORDER='1' CELLBORDER='1' CELLSPACING='0'><TR><TD COLSPAN='2'>000001a05343ea40</TD></TR><TR><TD COLSPAN='2'>VAR: x</TD></TR><TR><TD>0000000000000000</TD><TD>0000000000000000</TD></TR></TABLE>>, fillcolor="#445c00", color="#fdfdfd", fontcolor="#fdfdfd"];
+    node000001a05343ead0 -> node000001a05343e9b0 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343ead0 -> node000001a05343ea70 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e9b0 -> node000001a05343e950 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e9b0 -> node000001a05343e860 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e950 -> node000001a05343e980 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e950 -> node000001a05343eb60 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e980 -> node000001a05343eb90 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e980 -> node000001a05343e830 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343eb90 -> node000001a05343e8f0 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343eb90 -> node000001a05343e920 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e860 -> node000001a05343ea10 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e860 -> node000001a05343eaa0 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343ea70 -> node000001a05343e8c0 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e8c0 -> node000001a05343e9e0 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+    node000001a05343e8c0 -> node000001a05343ea40 [color="pink", penwidth=2, fontcolor="pink", fontsize=12, arrowsize=0.8];
+}

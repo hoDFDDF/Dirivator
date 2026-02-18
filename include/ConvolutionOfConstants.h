@@ -1,1 +1,5 @@
-#pragma once
+#ifndef _EQUATION_SIMPLIFY_
+#define _EQUATION_SIMPLIFY_
+
+
+#endif //_EQUATION_SIMPLIFY_
